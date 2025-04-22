@@ -32,6 +32,12 @@ class MyAppState extends ChangeNotifier { // state of app, can notify other widg
     current = WordPair.random(); // sets current pair to new word
     notifyListeners(); // notifies anything that checks MyAppState
   }
+
+  var favorites = <WordPair>[]; // creates a list that can only store WordPair
+
+  void toggleFavorite() {
+    
+  }
 }
 
 class MyHomePage extends StatelessWidget {
@@ -39,6 +45,12 @@ class MyHomePage extends StatelessWidget {
   Widget build(BuildContext context) { // build method, must return a widget
     var appState = context.watch<MyAppState>(); // checks the app's state with watch() method
     var pair = appState.current; // stores current word in pair
+    IconData icon;
+    if (appState.favorites.contains(pair)) {
+      icon = Icons.favorite;
+    } else {
+      icon = Icons.favorite_border;
+    }
 
     return Scaffold( // widget to be returned, usually nested
       body: Center( // centers all elements
@@ -48,12 +60,23 @@ class MyHomePage extends StatelessWidget {
             Text('A random idea:'),
             //Text(appState.current.asLowerCase), // uses appState to access class MyAppState, to access the variable current, and displays result asLowerCase
             BigCard(pair: pair), // displays pair variable in lower case
-            ElevatedButton( // creates a button
-              onPressed: () {
-                //print('button pressed!'); // displays button pressed on click in debug console
-                appState.getNext(); // access appState to call getNext() method
-              },
-              child: Text('next'), // text for the button
+            Row( // creates a row, allow like and next to be side by side
+            mainAxisSize: MainAxisSize.min, // items will not be alling by default when in row, this fixes that
+              children: [
+                ElevatedButton( // like button
+                  onPressed: () {
+                    appState.toggleFavorite();
+                  },
+                  child: Text('like'),
+                ),
+                ElevatedButton( // creates a button
+                  onPressed: () {
+                    //print('button pressed!'); // displays button pressed on click in debug console
+                    appState.getNext(); // access appState to call getNext() method
+                  },
+                  child: Text('next'), // text for the button
+                ),
+              ],
             )
           ],
         ),
