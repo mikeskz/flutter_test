@@ -36,7 +36,7 @@ class MyAppState extends ChangeNotifier { // state of app, can notify other widg
   var favorites = <WordPair>[]; // creates a list that can only store WordPair
 
   void toggleFavorite() {
-    
+    favorites.add(current); // adds the current word to the favorites list
   }
 }
 
@@ -63,11 +63,12 @@ class MyHomePage extends StatelessWidget {
             Row( // creates a row, allow like and next to be side by side
             mainAxisSize: MainAxisSize.min, // items will not be alling by default when in row, this fixes that
               children: [
-                ElevatedButton( // like button
+                ElevatedButton.icon( // like button with icon
                   onPressed: () {
-                    appState.toggleFavorite();
+                    appState.toggleFavorite(); // calls toggle favorite
                   },
-                  child: Text('like'),
+                  icon: Icon(icon), // sets the icon
+                  label: Text('like'), // text for button
                 ),
                 ElevatedButton( // creates a button
                   onPressed: () {
