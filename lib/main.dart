@@ -1,5 +1,6 @@
 import 'package:english_words/english_words.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:provider/provider.dart';
 
 void main() {
@@ -40,7 +41,68 @@ class MyAppState extends ChangeNotifier { // state of app, can notify other widg
   }
 }
 
-class MyHomePage extends StatelessWidget {
+class MyHomePage extends StatefulWidget {
+  @override
+  State<MyHomePage> createState() => _MyHomePageState();
+}
+
+class _MyHomePageState extends State<MyHomePage> { // turn stateless 
+  var selectedIndex = 0; // sets the default selected icon
+  @override
+  Widget build(BuildContext context) {
+    Widget page;
+    switch (selectedIndex) {
+      case 0:
+        page = GeneratorPage();
+        break;
+      case 1:
+        page = FavoritesPage();
+        break;
+      default:
+        throw UnimplementedError('no widget for $selectedIndex');
+    }
+    return LayoutBuilder( // layout builder allows child elements to wrap when necessary
+      builder: (context, constraints) {
+        return Scaffold(
+          body: Row(
+            children: [
+              SafeArea( // SafeArea makes sure that child elements are not blocked by notch or status bar
+                child: NavigationRail( // navigation rail
+                  extended: constraints.maxWidth >= 600, // displays labels if device width is at least 600px
+                  destinations: [
+                    NavigationRailDestination( // home destination
+                      icon: Icon(Icons.home),
+                      label: Text('Home'),
+                    ),
+                    NavigationRailDestination( // favorite destination
+                      icon: Icon(Icons.favorite),
+                      label: Text('Favorites'),
+                    ),
+                  ],
+                  selectedIndex: selectedIndex, // selects which page to view
+                  onDestinationSelected: (value) { // what happens when destination is selected
+                    setState(() { // sets the highlighted page on rail to user selected
+                      selectedIndex = value;
+                    }
+                    ); 
+                  },
+                ),
+              ),
+              Expanded(
+                child: Container(
+                  color: Theme.of(context).colorScheme.primaryContainer,
+                  child: GeneratorPage(),
+                ),
+              ),
+            ],
+          ),
+        );
+      }
+    );
+  }
+}
+
+class GeneratorPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) { // build method, must return a widget
     var appState = context.watch<MyAppState>(); // checks the app's state with watch() method
@@ -65,7 +127,7 @@ class MyHomePage extends StatelessWidget {
               children: [
                 ElevatedButton.icon( // like button with icon
                   onPressed: () {
-                    appState.toggleFavorite(); // calls toggle favorite
+                    appState.toggleFavorite(); // calls toggle favorite from appState class
                   },
                   icon: Icon(icon), // sets the icon
                   label: Text('like'), // text for button
@@ -105,6 +167,20 @@ class BigCard extends StatelessWidget { // class for random word styling
       child: Padding( // padding must be wrapped with widget
         padding: const EdgeInsets.all(20.0), // adds padding, can be added by right clicking text and selecting refractor, then padding
         child: Text(pair.asLowerCase, style: style), // text of pair varaiable, styles it with style variable
+      ),
+    );
+  }
+}
+
+class FavoritesPage extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: Center(
+        mainAxisAlignment: MainAxisAlignment.center,
+        child: Column(
+          
+        ),
       ),
     );
   }
