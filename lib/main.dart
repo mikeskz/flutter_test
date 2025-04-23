@@ -28,10 +28,11 @@ class MyApp extends StatelessWidget {
 
 class MyAppState extends ChangeNotifier { // state of app, can notify other widgets of changes
   var current = WordPair.random(); // sets current pair to new word
-
+  var history = <WordPair>[];
   void getNext() {
     current = WordPair.random(); // sets current pair to new word
     notifyListeners(); // notifies anything that checks MyAppState
+    history.add(current); // adds word to the history
   }
 
   var favorites = <WordPair>[]; // creates a list that can only store WordPair
@@ -91,7 +92,7 @@ class _MyHomePageState extends State<MyHomePage> { // turn stateless
               Expanded(
                 child: Container(
                   color: Theme.of(context).colorScheme.primaryContainer,
-                  child: GeneratorPage(),
+                  child: page,
                 ),
               ),
             ],
@@ -175,13 +176,51 @@ class BigCard extends StatelessWidget { // class for random word styling
 class FavoritesPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Center(
-        mainAxisAlignment: MainAxisAlignment.center,
-        child: Column(
-          
+    var appState = context.watch<MyAppState>(); // gets current state of app
+
+    if (appState.favorites.isEmpty) { // checks if favorites is empty
+      return Center(
+        child: Text('No Favorites Yet'), // if so, return text
+      );
+    }
+
+    return ListView(
+      children: [ // children of ListView
+        Padding(
+          padding: const EdgeInsets.all(20), // adds padding
+          child: Text('You Have ${appState.favorites.length} favorites'), // displays the number of favorites
         ),
-      ),
+        for (var pair in appState.favorites) // for loop looping for total amount of favorites
+          ListTile(
+            leading: Icon(Icons.favorite), // icon next to word pair
+            title: Text(pair.asLowerCase), // display word pair
+          )
+      ],
+    );
+  }
+}
+
+class HistoryPage extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    var appState = context.watch<MyAppState>();
+
+    if (appState.history.isEmpty) {
+      return Center(
+        child: Text('no history yet')
+      );
+    }
+    return ListView(
+      children: [
+        Padding(
+          padding: EdgeInsets.all(20),
+          child: Text('generated ${appState.history.length} so far'),
+        ),
+        for (var history in appState.history)
+          ListTile(
+            title: Text(history.asLowerCase)
+          )
+      ],
     );
   }
 }
