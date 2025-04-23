@@ -38,7 +38,12 @@ class MyAppState extends ChangeNotifier { // state of app, can notify other widg
   var favorites = <WordPair>[]; // creates a list that can only store WordPair
 
   void toggleFavorite() {
-    favorites.add(current); // adds the current word to the favorites list
+    if (favorites.contains(current)) { // check if word is already in favorites
+      favorites.remove(current); // removes it if so
+    } else {
+      favorites.add(current); // adds if not
+    }
+    //favorites.add(current); // adds the current word to the favorites list
   }
 }
 
@@ -59,6 +64,9 @@ class _MyHomePageState extends State<MyHomePage> { // turn stateless
       case 1:
         page = FavoritesPage();
         break;
+      case 2:
+        page = HistoryPage();
+        break;
       default:
         throw UnimplementedError('no widget for $selectedIndex');
     }
@@ -78,6 +86,10 @@ class _MyHomePageState extends State<MyHomePage> { // turn stateless
                     NavigationRailDestination( // favorite destination
                       icon: Icon(Icons.favorite),
                       label: Text('Favorites'),
+                    ),
+                    NavigationRailDestination(
+                      icon: Icon(Icons.access_time),
+                      label: Text('History'),
                     ),
                   ],
                   selectedIndex: selectedIndex, // selects which page to view
